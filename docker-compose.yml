@@ -1,0 +1,181 @@
+version: '3.8'
+
+services:
+  # ============================================================================
+  # Identity Hub - JWT Authentication & User Management
+  # ============================================================================
+  identity_hub:
+    build:
+      context: ./identity_hub
+      dockerfile: Dockerfile
+    container_name: identity_hub
+    ports:
+      - "8001:8001"
+    environment:
+      - DATABASE_PATH=/data/identity.db
+      - JWT_SECRET=${JWT_SECRET:-your-super-secret-key-change-in-production}
+      - SQLALCHEMY_DATABASE_URL=sqlite:////data/identity.db
+    volumes:
+      # Persistent volume for SQLite database
+      - identity_db_data:/data
+    networks:
+      - fastshop-network
+    # Resource constraints for 6GB host machine
+    mem_limit: 256m
+    memswap_limit: 256m
+    # Restart policy for production reliability
+    restart: unless-stopped
+    # Health check
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/auth/validate"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+    depends_on:
+      - identity_hub
+
+  # ============================================================================
+  # Product Hub - Catalog & Inventory Management
+  # ============================================================================
+  product_hub:
+    build:
+      context: ./product_hub
+      dockerfile: Dockerfile
+    container_name: product_hub
+    ports:
+      - "8002:8002"
+    environment:
+      - DATABASE_PATH=/data/product.db
+      - SQLALCHEMY_DATABASE_URL=sqlite:////data/product.db
+    volumes:
+      # Persistent volume for SQLite database
+      - product_db_data:/data
+    networks:
+      - fastshop-network
+    # Resource constraints for 6GB host machine
+    mem_limit: 256m
+    memswap_limit: 256m
+    # Restart policy for production reliability
+    restart: unless-stopped
+    # Health check
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8002/products"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+
+  # ============================================================================
+  # Transaction Hub - Cart & Checkout Management
+  # ============================================================================
+  transaction_hub:
+    build:
+      context: ./transaction_hub
+      dockerfile: Dockerfile
+    container_name: transaction_hub
+    ports:
+      - "8003:8003"
+    environment:
+      - DATABASE_PATH=/data/transaction.db
+      - SQLALCHEMY_DATABASE_URL=sqlite:////data/transaction.db
+      # Product Hub reference for stock verification
+      - PRODUCT_HUB_URL=http://product_hub:8002
+      # Identity Hub reference for token validation
+      - IDENTITY_HUB_URL=http://identity_hub:8001
+    volumes:
+      # Persistent volume for SQLite database
+      - transaction_db_data:/data
+    networks:
+      - fastshop-network
+    # Resource constraints for 6GB host machine
+    mem_limit: 256m
+    memswap_limit: 256m
+    # Restart policy for production reliability
+    restart: unless-stopped
+    # Health check
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8003/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+    # Wait for Product Hub to be ready before starting
+    depends_on:
+      product_hub:
+        condition: service_healthy
+
+  # ============================================================================
+  # Frontend Web Application - React + Vite + TailwindCSS
+  # ============================================================================
+  frontend_app:
+    build:
+      context: ./frontend_app
+      dockerfile: Dockerfile
+      args:
+        # Pass API URLs as build arguments for customization
+        VITE_API_IDENTITY_URL=http://localhost:8001
+        VITE_API_PRODUCT_URL=http://localhost:8002
+        VITE_API_TRANSACTION_URL=http://localhost:8003
+    container_name: frontend_app
+    ports:
+      - "3000:3000"
+    environment:
+      # Frontend-facing URLs (for browser API calls)
+      - VITE_API_IDENTITY_URL=http://localhost:8001
+      - VITE_API_PRODUCT_URL=http://localhost:8002
+      - VITE_API_TRANSACTION_URL=http://localhost:8003
+    volumes:
+      # For development: mount source code for hot reload (optional)
+      # - ./frontend_app/src:/app/src
+      # For persistent node_modules
+      - frontend_node_modules:/app/node_modules
+    networks:
+      - fastshop-network
+    # Resource constraints for 6GB host machine (frontend needs more for Vite dev server)
+    mem_limit: 512m
+    memswap_limit: 512m
+    # Restart policy
+    restart: unless-stopped
+    # Health check
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    # Wait for backend services before starting
+    depends_on:
+      identity_hub:
+        condition: service_healthy
+      product_hub:
+        condition: service_healthy
+      transaction_hub:
+        condition: service_healthy
+
+# ============================================================================
+# Named Volumes for Persistent Data
+# ============================================================================
+volumes:
+  identity_db_data:
+    driver: local
+  product_db_data:
+    driver: local
+  transaction_db_data:
+    driver: local
+  frontend_node_modules:
+    driver: local
+
+# ============================================================================
+# Custom Bridge Network for Service Communication
+# ============================================================================
+networks:
+  fastshop-network:
+    driver: bridge
+    driver_opts:
+      # Optimize bridge network for inter-service communication
+      com.docker.network.driver.mtu: 1500
+    ipam:
+      config:
+        # Define subnet for predictable IP addresses
+        - subnet: 172.28.0.0/16
