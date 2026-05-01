@@ -8,13 +8,13 @@ WORKDIR /app
 COPY package.json package-lock.json* ./
 
 # Install dependencies
-RUN npm ci --frozen-lockfile
+RUN npm install
 
 # Copy source code
 COPY . .
 
 # Build the app
-RUN npm run build
+RUN npm install terser && npm run build
 
 # Stage 2: Runtime - serve with lightweight HTTP server
 FROM node:18-alpine
