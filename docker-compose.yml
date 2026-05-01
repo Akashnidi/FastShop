@@ -27,7 +27,7 @@ services:
     restart: unless-stopped
     # Health check
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8001/auth/validate"]
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
       interval: 30s
       timeout: 10s
       retries: 3
