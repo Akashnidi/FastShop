@@ -71,7 +71,7 @@ class Database:
         print("✓ Database migrations completed")
     
     async def create_product(
-        self, name: str, price: float, stock: int = 0, description: str = ""
+        self, name: str, price: float, stock: int = 0, description: str = "", image_url: str = ""
     ) -> Product:
         """
         Create a new product in the database.
@@ -81,6 +81,7 @@ class Database:
             price: Product price
             stock: Initial stock quantity
             description: Product description
+            image_url: Product image URL
         
         Returns:
             Product object with assigned product_id
@@ -89,11 +90,11 @@ class Database:
             raise RuntimeError("Database not connected")
         
         sql = f"""
-        INSERT INTO {Product.TABLE_NAME} (name, description, price, stock)
-        VALUES (?, ?, ?, ?)
+        INSERT INTO {Product.TABLE_NAME} (name, description, price, stock, image_url)
+        VALUES (?, ?, ?, ?, ?)
         """
         
-        cursor = await self.conn.execute(sql, (name, description, price, stock))
+        cursor = await self.conn.execute(sql, (name, description, price, stock, image_url))
         await self.conn.commit()
         
         product_id = cursor.lastrowid
@@ -103,6 +104,7 @@ class Database:
             description=description,
             price=price,
             stock=stock,
+            image_url=image_url,
         )
         return product
     
@@ -165,7 +167,7 @@ class Database:
             return await self.get_product_by_id(product_id)
         
         # Only allow updating specific fields
-        allowed_fields = {"name", "description", "price", "stock"}
+        allowed_fields = {"name", "description", "price", "stock", "image_url"}
         update_fields = {k: v for k, v in kwargs.items() if k in allowed_fields}
         
         if not update_fields:

@@ -147,6 +147,7 @@ async def create_product(request: ProductCreateRequest):
         description=request.description,
         price=request.price,
         stock=request.stock,
+        image_url=request.image_url,
     )
     
     return ProductResponse(**product.to_dict())

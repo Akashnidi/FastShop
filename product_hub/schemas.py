@@ -13,6 +13,7 @@ class ProductCreateRequest(BaseModel):
     description: str = Field(default="", max_length=5000, description="Product description")
     price: float = Field(..., gt=0, description="Product price (must be > 0)")
     stock: int = Field(default=0, ge=0, description="Initial stock quantity")
+    image_url: str = Field(default="", max_length=2000, description="Product image URL")
     
     class Config:
         json_schema_extra = {
@@ -20,7 +21,8 @@ class ProductCreateRequest(BaseModel):
                 "name": "Wireless Headphones",
                 "description": "High-quality Bluetooth headphones with noise cancellation",
                 "price": 79.99,
-                "stock": 50
+                "stock": 50,
+                "image_url": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400"
             }
         }
 
@@ -31,12 +33,14 @@ class ProductUpdateRequest(BaseModel):
     description: Optional[str] = Field(None, max_length=5000, description="Product description")
     price: Optional[float] = Field(None, gt=0, description="Product price")
     stock: Optional[int] = Field(None, ge=0, description="Stock quantity")
+    image_url: Optional[str] = Field(None, max_length=2000, description="Product image URL")
     
     class Config:
         json_schema_extra = {
             "example": {
                 "price": 89.99,
-                "stock": 45
+                "stock": 45,
+                "image_url": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400"
             }
         }
 
@@ -46,8 +50,7 @@ class ProductResponse(BaseModel):
     product_id: int
     name: str
     description: str
-    price: float
-    stock: int
+    image_url: str
     created_at: str
     updated_at: str
     
@@ -57,6 +60,9 @@ class ProductResponse(BaseModel):
                 "product_id": 1,
                 "name": "Wireless Headphones",
                 "description": "High-quality Bluetooth headphones with noise cancellation",
+                "price": 79.99,
+                "stock": 50,
+                "image_url": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400"n": "High-quality Bluetooth headphones with noise cancellation",
                 "price": 79.99,
                 "stock": 50,
                 "created_at": "2026-04-30T12:00:00",

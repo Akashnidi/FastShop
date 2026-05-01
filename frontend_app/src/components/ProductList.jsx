@@ -93,6 +93,25 @@ export default function ProductList({ userId, onCartUpdate }) {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {products.map((product) => (
             <div key={product.product_id} className="card-hover">
+              {/* Product Image */}
+              <div className="mb-4 h-48 bg-gray-200 rounded-lg overflow-hidden flex items-center justify-center">
+                {product.image_url ? (
+                  <img
+                    src={product.image_url}
+                    alt={product.name}
+                    className="w-full h-full object-cover hover:scale-105 transition-transform"
+                    onError={(e) => {
+                      e.target.style.display = 'none'
+                      e.target.parentElement.classList.add('bg-gray-300')
+                    }}
+                  />
+                ) : (
+                  <div className="text-gray-400 text-center">
+                    <p className="text-sm">No image available</p>
+                  </div>
+                )}
+              </div>
+
               {/* Product Header */}
               <div className="mb-4">
                 <h3 className="text-lg font-semibold text-gray-800 mb-1">

@@ -1,9 +1,9 @@
 import axios from 'axios'
 
-// API Base URLs (can be overridden by environment variables)
-const IDENTITY_API_URL = import.meta.env.VITE_API_IDENTITY_URL || 'http://localhost:8001'
-const PRODUCT_API_URL = import.meta.env.VITE_API_PRODUCT_URL || 'http://localhost:8002'
-const TRANSACTION_API_URL = import.meta.env.VITE_API_TRANSACTION_URL || 'http://localhost:8003'
+// API Base URLs (production endpoints with 98.70.33.254)
+const IDENTITY_API_URL = import.meta.env.VITE_API_IDENTITY_URL || 'http://98.70.33.254:8001'
+const PRODUCT_API_URL = import.meta.env.VITE_API_PRODUCT_URL || 'http://98.70.33.254:8002'
+const TRANSACTION_API_URL = import.meta.env.VITE_API_TRANSACTION_URL || 'http://98.70.33.254:8003'
 
 // ============================================================================
 // IDENTITY HUB CLIENT

@@ -31,6 +31,7 @@ class Product:
         description TEXT NOT NULL DEFAULT '',
         price DECIMAL(10, 2) NOT NULL CHECK(price >= 0),
         stock INTEGER NOT NULL CHECK(stock >= 0) DEFAULT 0,
+        image_url TEXT NOT NULL DEFAULT '',
         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
     );
@@ -49,6 +50,7 @@ class Product:
         description: str = "",
         price: float = None,
         stock: int = 0,
+        image_url: str = "",
         created_at: datetime = None,
         updated_at: datetime = None,
     ):
@@ -58,6 +60,7 @@ class Product:
         self.description = description
         self.price = price
         self.stock = stock
+        self.image_url = image_url
         self.created_at = created_at or datetime.utcnow()
         self.updated_at = updated_at or datetime.utcnow()
     
@@ -67,6 +70,7 @@ class Product:
             "product_id": self.product_id,
             "name": self.name,
             "description": self.description,
+            "image_url": self.image_url,
             "price": float(self.price) if self.price else 0.0,
             "stock": self.stock,
             "created_at": self.created_at.isoformat() if isinstance(self.created_at, datetime) else self.created_at,
@@ -78,7 +82,7 @@ class Product:
         """
         Create a Product instance from a database row.
         
-        Row tuple structure: (product_id, name, description, price, stock, created_at, updated_at)
+        Row tuple structure: (product_id, name, description, price, stock, image_url, created_at, updated_at)
         """
         return cls(
             product_id=row[0],
@@ -86,6 +90,7 @@ class Product:
             description=row[2],
             price=float(row[3]),
             stock=row[4],
-            created_at=datetime.fromisoformat(row[5]) if isinstance(row[5], str) else row[5],
-            updated_at=datetime.fromisoformat(row[6]) if isinstance(row[6], str) else row[6],
+            image_url=row[5],
+            created_at=datetime.fromisoformat(row[6]) if isinstance(row[6], str) else row[6],
+            updated_at=datetime.fromisoformat(row[7]) if isinstance(row[7], str) else row[7],
         )
