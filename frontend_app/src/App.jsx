@@ -242,11 +242,11 @@ export default function App() {
 
           <div className="border-t border-gray-200 mt-8 pt-8 text-center">
             <p className="text-sm text-gray-600">
-              © 2026 FastShop. Phase 5 Complete — Microservices E-Commerce
+              © 2026 FastShop. Microservices E-Commerce
               Demo.
             </p>
             <p className="text-xs text-gray-500 mt-2">
-              Optimized for 6GB RAM systems with Docker Compose orchestration.
+              Optimized for 4GB RAM systems with Docker Compose orchestration.
             </p>
           </div>
         </div>
