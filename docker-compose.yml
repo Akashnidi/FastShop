@@ -32,8 +32,6 @@ services:
       timeout: 10s
       retries: 3
       start_period: 5s
-    depends_on:
-      - identity_hub
 
   # ============================================================================
   # Product Hub - Catalog & Inventory Management
@@ -114,17 +112,17 @@ services:
       dockerfile: Dockerfile
       args:
         # Pass API URLs as build arguments for customization
-        VITE_API_IDENTITY_URL=http://localhost:8001
-        VITE_API_PRODUCT_URL=http://localhost:8002
-        VITE_API_TRANSACTION_URL=http://localhost:8003
+        - VITE_API_IDENTITY_URL=http://98.70.33.254:8001
+        - VITE_API_PRODUCT_URL=http://98.70.33.254:8002
+        - VITE_API_TRANSACTION_URL=http://98.70.33.254:8003
     container_name: frontend_app
     ports:
       - "3000:3000"
     environment:
       # Frontend-facing URLs (for browser API calls)
-      - VITE_API_IDENTITY_URL=http://localhost:8001
-      - VITE_API_PRODUCT_URL=http://localhost:8002
-      - VITE_API_TRANSACTION_URL=http://localhost:8003
+      - VITE_API_IDENTITY_URL=http://98.70.33.254:8001
+      - VITE_API_PRODUCT_URL=http://98.70.33.254:8002
+      - VITE_API_TRANSACTION_URL=http://98.70.33.254:8003
     volumes:
       # For development: mount source code for hot reload (optional)
       # - ./frontend_app/src:/app/src
