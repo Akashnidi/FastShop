@@ -62,9 +62,7 @@ class ProductResponse(BaseModel):
                 "description": "High-quality Bluetooth headphones with noise cancellation",
                 "price": 79.99,
                 "stock": 50,
-                "image_url": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400"n": "High-quality Bluetooth headphones with noise cancellation",
-                "price": 79.99,
-                "stock": 50,
+                "image_url": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400",
                 "created_at": "2026-04-30T12:00:00",
                 "updated_at": "2026-04-30T12:00:00"
             }
